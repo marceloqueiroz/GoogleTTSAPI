@@ -25,9 +25,9 @@ NSString *language = @"en";
 }];
 ```
 
+When the language is not provided, the GoogleTTSAPI uses the device's current locale.
 ```objective-c
 NSString *text = @"Hello world";
-NSString *language = @"en";
 [GoogleTTSAPI textToSpeechWithText:text success:^(NSData *data) {
 	// Handle the returned NSData. Typically write it to a file and then play it
 } failure:^(NSError *error) {
