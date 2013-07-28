@@ -8,15 +8,18 @@
 
 #import "ViewController.h"
 
+#import <AVFoundation/AVFoundation.h>
+
 #import "GoogleTTSAPI.h"
 
 #import "LanguagesViewController.h"
 
 #import "MBProgressHUD.h"
 
-@interface ViewController ()
+@interface ViewController () <AVAudioPlayerDelegate>
+@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 @property (strong, nonatomic) UIBarButtonItem *barButtonPlay;
-@property (strong, nonatomic) UIBarButtonItem *barButtonPause;
+@property (strong, nonatomic) UIBarButtonItem *barButtonStop;
 @property (strong, nonatomic) UIBarButtonItem *barButtonDone;
 @property (strong, nonatomic) UIBarButtonItem *barButtonLanguage;
 @end
@@ -27,12 +30,14 @@
 {
     [super viewDidLoad];
     
+    [self initAudioSession];
+    
     // Title
     self.title = @"Google TTS API Demo";
     
     // Bar buttons
     self.barButtonPlay = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay target:self action:@selector(btnPlayTapped)];
-    self.barButtonPause = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPause target:self action:@selector(btnPauseTapped)];
+    self.barButtonStop = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(btnStopTapped)];
     self.barButtonDone = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(btnDoneTapped)];
     self.barButtonLanguage = [[UIBarButtonItem alloc] initWithTitle:[LanguagesViewController currentLanguage] style:UIBarButtonItemStylePlain target:self action:@selector(btnLanguageTapped)];
     
@@ -60,11 +65,13 @@
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
     [GoogleTTSAPI textToSpeechWithText:self.textView.text andLanguage:[LanguagesViewController currentLanguage] success:^(NSData *data) {
-        [data writeToURL:[self fileURLWithFileName:@"teste2.mp3"] atomically:NO];
+        NSURL *audioFileURL = [self fileURLWithFileName:@"converted.mp3"];
+        [data writeToURL:audioFileURL atomically:NO];
+        [self playAudioFromURL:audioFileURL];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             self.navigationItem.rightBarButtonItem.enabled = YES;
-            self.navigationItem.rightBarButtonItem = self.barButtonPause;
+            self.navigationItem.rightBarButtonItem = self.barButtonStop;
             [MBProgressHUD hideHUDForView:self.view animated:YES];
         });
     } failure:^(NSError *error) {
@@ -79,7 +86,8 @@
     }];
 }
 
-- (void) btnPauseTapped {
+- (void) btnStopTapped {
+    [self stopAudioPlayer];
     self.navigationItem.rightBarButtonItem = self.barButtonPlay;
 }
 
@@ -91,6 +99,35 @@
 - (void) btnLanguageTapped {
     LanguagesViewController *viewController = [[LanguagesViewController alloc] init];
     [self.navigationController pushViewController:viewController animated:YES];
+}
+
+#pragma mark - Audio methods
+
+- (void) initAudioSession {
+    [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryAmbient error: nil];
+    
+    NSError *activationError = nil;
+    [[AVAudioSession sharedInstance] setActive: YES error: &activationError];
+}
+
+- (void) playAudioFromURL: (NSURL*) url {
+    NSError *error = nil;
+    self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
+    self.audioPlayer.delegate = self;
+    [self.audioPlayer prepareToPlay];
+    [self.audioPlayer play];
+}
+
+- (void) stopAudioPlayer {
+    self.audioPlayer.delegate = nil;
+    [self.audioPlayer stop];
+    self.audioPlayer = nil;
+}
+
+#pragma mark - AVAudioPlayerDelegate implementation
+
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    [self btnStopTapped];
 }
 
 #pragma mark - UITextViewDelegate implementation

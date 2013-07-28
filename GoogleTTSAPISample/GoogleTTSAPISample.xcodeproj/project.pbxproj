@@ -22,6 +22,7 @@
 		9C39AFCE17A427120080E6BA /* LanguagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C39AFCC17A427120080E6BA /* LanguagesViewController.m */; };
 		9C39AFCF17A427120080E6BA /* LanguagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9C39AFCD17A427120080E6BA /* LanguagesViewController.xib */; };
 		9C39B00617A4C3D30080E6BA /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C39AFEF17A4C3D30080E6BA /* MBProgressHUD.m */; };
+		9CA592C417A4CE5A00CFE323 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA592C317A4CE5A00CFE323 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		9C39AFCD17A427120080E6BA /* LanguagesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LanguagesViewController.xib; sourceTree = "<group>"; };
 		9C39AFEE17A4C3D30080E6BA /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		9C39AFEF17A4C3D30080E6BA /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		9CA592C317A4CE5A00CFE323 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CA592C417A4CE5A00CFE323 /* AVFoundation.framework in Frameworks */,
 				9C39AFA117A339EA0080E6BA /* UIKit.framework in Frameworks */,
 				9C39AFA317A339EA0080E6BA /* Foundation.framework in Frameworks */,
 				9C39AFA517A339EA0080E6BA /* CoreGraphics.framework in Frameworks */,
@@ -67,6 +70,7 @@
 		9C39AF9417A339EA0080E6BA = {
 			isa = PBXGroup;
 			children = (
+				9CA592C317A4CE5A00CFE323 /* AVFoundation.framework */,
 				9C39AFA617A339EA0080E6BA /* GoogleTTSAPISample */,
 				9C39AF9F17A339EA0080E6BA /* Frameworks */,
 				9C39AF9E17A339EA0080E6BA /* Products */,
@@ -353,6 +357,7 @@
 				9C39AFC217A339EA0080E6BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

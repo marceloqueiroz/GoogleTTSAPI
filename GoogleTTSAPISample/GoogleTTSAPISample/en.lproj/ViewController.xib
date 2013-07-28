@@ -40,6 +40,8 @@
 						<int key="NSvFlags">274</int>
 						<string key="NSFrameSize">{320, 416}</string>
 						<reference key="NSSuperview" ref="774585933"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">1</int>
@@ -48,7 +50,26 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<bool key="IBUIMultipleTouchEnabled">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Segundo essa fonte, na próxima semana devem ser anunciadas as taxas de mais trechos que vão a leilão até o começo do ano que vem. No início de julho, o governo definiu em 8,5 por cento o retorno do primeiro projeto que vai a leilão, o do trecho entre Açailândia (MA) e Barcarena (PA). Na ocasião, o ministro dos Transportes, César Borges, já havia dito que a taxa de 8,5 por cento seria o teto para os demais lotes de ferrovia a serem concedidos.</string>
+						<object class="NSMutableString" key="IBUIText">
+							<bytes key="NS.bytes">QXBwbGXigJlzIERldmVsb3BlciBDZW50ZXIgaXMgZmluYWxseSBiYWNrIG9ubGluZSwgYWZ0ZXIgdGFr
+aW5nIGEgYnJlYWsgZm9yIG92ZXIgYSB3ZWVrLiBUaGUgZGV2ZWxvcGVyIHNpdGUgd2VudCBkb3duIGFm
+dGVyIGEgaGFja2luZyBhdHRlbXB0IG1pZC13ZWVrIGxhc3Qgd2VlaywgYW5kIHN0YXllZCBkb3duIHdp
+dGhvdXQgYW55IGtpbmQgb2YgcmV0dXJuIGZvciBtdWx0aXBsZSBkYXlzLiBUaGUgaGFjayB3YXMgcmVw
+b3J0ZWRseSBvbmUgdGhhdCBvbmx5IGFmZmVjdGVkIGRldmVsb3BlciBhY2NvdW50cywgYWZ0ZXIgYW4g
+aW50cnVkZXIgYXR0ZW1wdGVkIHRvIHNlY3VyZSBwZXJzb25hbCBpbmZvcm1hdGlvbi4KCkFwcGxlIHNh
+aWQgYXQgdGhlIHRpbWUgdGhhdCBpdCB3YXMgcG9zc2libGUgcGVyc29uYWwgaW5mb3JtYXRpb24gaW5j
+bHVkaW5nIGRldmVsb3BlciBuYW1lcywgbWFpbGluZyBhZGRyZXNzZXMgYW5kIGVtYWlsIGFkZHJlc3Nl
+cyBjb3VsZCBoYXZlIGJlZW4gYWNjZXNzZWQsIGJ1dCBubyBjcmVkaXQgY2FyZCBkYXRhIHdhcyBsZWFr
+ZWQuIEFwcGxlIG9mZmVyZWQgbm8gdGltZS10YWJsZSBmb3IgcmV0dXJuIGF0IHRoZSB0aW1lLCBidXQg
+ZGlkIGNyZWF0ZSBhIHN5c3RlbSBmb3IgdHJhY2tpbmcgdGhlIHN0YXR1cyBvZiB0aGUgc2l0ZSBhZnRl
+ciBhIHdlZWsgb2YgZG93bnRpbWUsIGFuZCBzdGFydGVkIGJyaW5naW5nIHRoaW5ncyBiYWNrIG9ubGlu
+ZSBzbG93bHkuCgpBIHJlc2VhcmNoZXIgcmVwb3J0ZWQgdGhhdCBoZeKAmWQgcG9zc2libHkgcHJvbXB0
+ZWQgdGhlIGRvd24gdGltZSBhZnRlciBwcm9iaW5nIHRoZSBkZXYgY2VudGVyIGFuZCByZXBvcnRpbmcg
+YnVncyByZWdhcmRpbmcgdnVsbmVyYWJpbGl0aWVzIGluIGl0IGFuZCB0aGUgaUFkIFdvcmtiZW5jaCBz
+aXRlLCBidXQgd2XigJl2ZSByZWFjaGVkIG91dCB0byBBcHBsZSBmb3IgbW9yZSBzcGVjaWZpYyBpbmZv
+cm1hdGlvbiBhYm91dCB0aGUgcmV0dXJuIGFuZCB3aGF0IHN0ZXBzIGxlZCB0byBpdCwgYW5kIHdpbGwg
+dXBkYXRlIHdpdGggYSByZXNwb25zZSBpZiB3ZSByZWNlaXZlIG9uZS4</bytes>
+						</object>
 						<object class="IBUITextInputTraits" key="IBUITextInputTraits">
 							<int key="IBUIAutocapitalizationType">2</int>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -66,6 +87,8 @@
 				</array>
 				<string key="NSFrame">{{0, 64}, {320, 416}}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView" ref="720255754"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
 					<bytes key="NSWhite">MC43NQA</bytes>
@@ -173,7 +196,29 @@
 			<nil key="sourceID"/>
 			<int key="maxID">10</int>
 		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes"/>
+		<object class="IBClassDescriber" key="IBDocument.Classes">
+			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
+				<object class="IBPartialClassDescription">
+					<string key="className">ViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">textView</string>
+						<string key="NS.object.0">UITextView</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">textView</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">textView</string>
+							<string key="candidateClassName">UITextView</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/ViewController.h</string>
+					</object>
+				</object>
+			</array>
+		</object>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaTouchFramework</string>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
