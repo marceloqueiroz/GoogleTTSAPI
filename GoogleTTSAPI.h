@@ -15,9 +15,12 @@
 #define kGoogleTTSAPI_InvalidTextErrorCode -1001
 #define kGoogleTTSAPI_InvalidLocaleErrorCode -1002
 #define kGoogleTTSAPI_InvalidAudioDataErrorCode -1003
+#define kGoogleTTSAPI_InvalidUnexpectedExceptionCode -1004
 
 
 @interface GoogleTTSAPI : NSObject
+
++ (void) checkGoogleTTSAPIAvailabilityWithCompletionBlock:(void(^)(BOOL available))completion;
 
 + (void)textToSpeechWithText:(NSString *)text success:(void(^)(NSData *data))success failure:(void(^)(NSError *error))failure;
 

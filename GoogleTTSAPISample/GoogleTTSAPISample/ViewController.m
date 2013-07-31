@@ -43,6 +43,14 @@
     
     self.navigationItem.leftBarButtonItem = self.barButtonLanguage;
     self.navigationItem.rightBarButtonItem = self.barButtonPlay;
+    
+    self.barButtonPlay.enabled = NO;
+    // Check for availability
+    [GoogleTTSAPI checkGoogleTTSAPIAvailabilityWithCompletionBlock:^(BOOL available) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.barButtonPlay.enabled = available;
+        });
+    }];
 }
 
 - (void) viewWillAppear:(BOOL)animated {

@@ -20,40 +20,70 @@
 
 @implementation GoogleTTSAPI
 
++ (void) checkGoogleTTSAPIAvailabilityWithCompletionBlock:(void(^)(BOOL available))completion {
+    @try {
+        [GoogleTTSAPI textToSpeechWithText:@"Hello World" andLanguage:@"en-US" success:^(NSData *data) {
+            if (completion && [data length] > 0) {
+                completion(YES);
+            } else if (completion) {
+                completion(NO);
+            }
+        } failure:^(NSError *error) {
+            if (completion) {
+                completion(NO);
+            }
+        }];
+    }
+    @catch (NSException *exception) {
+        if (completion) {
+            completion(NO);
+        }
+    }
+}
+
 + (void)textToSpeechWithText:(NSString *)text success:(void(^)(NSData *data))success failure:(void(^)(NSError *error))failure {
     [GoogleTTSAPI textToSpeechWithText:text andLanguage:[[NSLocale currentLocale] localeIdentifier] success:success failure:failure];
 }
 
 + (void)textToSpeechWithText:(NSString *)text andLanguage:(NSString*) language success:(void(^)(NSData *data))success failure:(void(^)(NSError *error))failure {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        NSString *trimmedText = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        
-        // Validates the text
-        if (trimmedText && [trimmedText length] > 0) {
-            NSString *trimmedLocale = [language stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:trimmedLocale];
+        @try {
+            NSString *trimmedText = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
             
-            // Validates the locale
-            if (locale) {
-                NSData *audioData = [GoogleTTSAPI googleTextToSpeechWithText:text andLanguage:language];
-                if (audioData && success) {
-                    success(audioData);
-                } else if (!audioData && failure) {
-                    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: kGoogleTTSAPI_InvalidAudioDataMessage};
-                    NSError *error = [NSError errorWithDomain:kGoogleTTSAPIDomain code:kGoogleTTSAPI_InvalidAudioDataErrorCode userInfo:userInfo];
-                    failure(error);
+            // Validates the text
+            if (trimmedText && [trimmedText length] > 0) {
+                NSString *trimmedLocale = [language stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:trimmedLocale];
+                
+                // Validates the locale
+                if (locale) {
+                    NSData *audioData = [GoogleTTSAPI googleTextToSpeechWithText:text andLanguage:language];
+                    if (audioData && success) {
+                        success(audioData);
+                    } else if (!audioData && failure) {
+                        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: kGoogleTTSAPI_InvalidAudioDataMessage};
+                        NSError *error = [NSError errorWithDomain:kGoogleTTSAPIDomain code:kGoogleTTSAPI_InvalidAudioDataErrorCode userInfo:userInfo];
+                        failure(error);
+                    }
+                } else {
+                    if (failure) {
+                        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: kGoogleTTSAPI_InvalidLocaleMessage};
+                        NSError *error = [NSError errorWithDomain:kGoogleTTSAPIDomain code:kGoogleTTSAPI_InvalidLocaleErrorCode userInfo:userInfo];
+                        failure(error);
+                    }
                 }
             } else {
                 if (failure) {
-                    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: kGoogleTTSAPI_InvalidLocaleMessage};
-                    NSError *error = [NSError errorWithDomain:kGoogleTTSAPIDomain code:kGoogleTTSAPI_InvalidLocaleErrorCode userInfo:userInfo];
+                    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: kGoogleTTSAPI_InvalidTextMessage};
+                    NSError *error = [NSError errorWithDomain:kGoogleTTSAPIDomain code:kGoogleTTSAPI_InvalidTextErrorCode userInfo:userInfo];
                     failure(error);
                 }
             }
-        } else {
+        }
+        @catch (NSException *exception) {
             if (failure) {
-                NSDictionary *userInfo = @{NSLocalizedDescriptionKey: kGoogleTTSAPI_InvalidTextMessage};
-                NSError *error = [NSError errorWithDomain:kGoogleTTSAPIDomain code:kGoogleTTSAPI_InvalidTextErrorCode userInfo:userInfo];
+                NSDictionary *userInfo = @{NSLocalizedDescriptionKey: [exception reason]};
+                NSError *error = [NSError errorWithDomain:kGoogleTTSAPIDomain code:kGoogleTTSAPI_InvalidUnexpectedExceptionCode userInfo:userInfo];
                 failure(error);
             }
         }
