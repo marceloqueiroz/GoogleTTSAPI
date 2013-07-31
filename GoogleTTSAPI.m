@@ -8,6 +8,8 @@
 
 #import "GoogleTTSAPI.h"
 
+#import "Base64.h"
+
 // Error messages
 #define kGoogleTTSAPI_InvalidTextMessage @"Invalid text, please provided a valid text."
 #define kGoogleTTSAPI_InvalidLocaleMessage @"Invalid locale, please provided a valid locale."
@@ -22,7 +24,7 @@
 
 + (void) checkGoogleTTSAPIAvailabilityWithCompletionBlock:(void(^)(BOOL available))completion {
     @try {
-        [GoogleTTSAPI textToSpeechWithText:@"Hello World" andLanguage:@"en-US" success:^(NSData *data) {
+        [GoogleTTSAPI textToSpeechWithText:@"Hello World" andLanguage:@"en-US" cached:NO success:^(NSData *data) {
             if (completion && [data length] > 0) {
                 completion(YES);
             } else if (completion) {
@@ -46,6 +48,10 @@
 }
 
 + (void)textToSpeechWithText:(NSString *)text andLanguage:(NSString*) language success:(void(^)(NSData *data))success failure:(void(^)(NSError *error))failure {
+    [GoogleTTSAPI textToSpeechWithText:text andLanguage:language cached:YES success:success failure:failure];
+}
+
++ (void)textToSpeechWithText:(NSString *)text andLanguage:(NSString*) language cached:(BOOL) cached success:(void(^)(NSData *data))success failure:(void(^)(NSError *error))failure {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         @try {
             NSString *trimmedText = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -57,7 +63,14 @@
                 
                 // Validates the locale
                 if (locale) {
-                    NSData *audioData = [GoogleTTSAPI googleTextToSpeechWithText:text andLanguage:language];
+                    NSData *audioData = [GoogleTTSAPI dataForText:trimmedText andLanguage:language];
+                    if (!audioData) {
+                        audioData = [GoogleTTSAPI googleTextToSpeechWithText:trimmedText andLanguage:language];
+                        if (cached) {
+                            [GoogleTTSAPI cacheData:audioData forText:trimmedText andLanguage:language];   
+                        }
+                    }
+                    
                     if (audioData && success) {
                         success(audioData);
                     } else if (!audioData && failure) {
@@ -131,5 +144,53 @@
     urlString = [urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     return [NSData dataWithContentsOfURL:[NSURL URLWithString:urlString]];
 }
+
+#pragma mark - Cache control
+
++ (NSURL*) fileURLWithFileName: (NSString*) fileName {
+    NSURL *documentDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    return [documentDirectory URLByAppendingPathComponent:[NSString stringWithFormat:@"GoogleTTSAPI/%@",fileName]];
+}
+
++ (NSMutableDictionary*) cacheDictionary {
+    NSURL *cacheDirectory = [GoogleTTSAPI fileURLWithFileName:@""];
+    NSURL *cacheDictionaryFileURL = [GoogleTTSAPI fileURLWithFileName:@"cache.plist"];
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:[cacheDirectory path]]) {
+        [fileManager createDirectoryAtURL:cacheDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        [dictionary writeToURL:cacheDictionaryFileURL atomically:YES];
+    }
+    
+    return [NSMutableDictionary dictionaryWithContentsOfURL:cacheDictionaryFileURL];
+}
+
++ (NSData*) dataForText: (NSString*) text andLanguage: (NSString*) language {
+    NSString *key = [NSString stringWithFormat:@"%@_%@",[text base64EncodedString],language];
+    NSDictionary *dictionary = [GoogleTTSAPI cacheDictionary];
+    
+    NSString *fileName = [dictionary valueForKey:key];
+    if (fileName) {
+        return [NSData dataWithContentsOfURL:[GoogleTTSAPI fileURLWithFileName:fileName]];
+    } else {
+        return nil;
+    }
+}
+
++ (void) cacheData: (NSData*) data forText: (NSString*) text andLanguage: (NSString*) language {
+    // Save file
+    NSString *fileName = [NSString stringWithFormat:@"%d_%@",(int)[NSDate timeIntervalSinceReferenceDate],language];
+    NSURL *fileURL = [GoogleTTSAPI fileURLWithFileName:fileName];
+    [data writeToURL:fileURL atomically:YES];
+    
+    // Update cache
+    NSString *key = [NSString stringWithFormat:@"%@_%@",[text base64EncodedString],language];
+    NSMutableDictionary *dictionary = [GoogleTTSAPI cacheDictionary];
+    [dictionary setValue:fileName forKey:key];
+    NSURL *cacheDictionaryFileURL = [GoogleTTSAPI fileURLWithFileName:@"cache.plist"];
+    [dictionary writeToURL:cacheDictionaryFileURL atomically:YES];
+}
+
 
 @end

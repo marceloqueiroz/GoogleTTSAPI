@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9C0112FD17A9906C0001A6E2 /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0112FC17A9906C0001A6E2 /* Base64.m */; };
 		9C39AFA117A339EA0080E6BA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C39AFA017A339EA0080E6BA /* UIKit.framework */; };
 		9C39AFA317A339EA0080E6BA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C39AFA217A339EA0080E6BA /* Foundation.framework */; };
 		9C39AFA517A339EA0080E6BA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C39AFA417A339EA0080E6BA /* CoreGraphics.framework */; };
@@ -26,6 +27,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9C0112FB17A9906C0001A6E2 /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
+		9C0112FC17A9906C0001A6E2 /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
 		9C39AF9D17A339EA0080E6BA /* GoogleTTSAPISample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoogleTTSAPISample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C39AFA017A339EA0080E6BA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		9C39AFA217A339EA0080E6BA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -67,6 +70,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9C0112FA17A9906C0001A6E2 /* Base64 */ = {
+			isa = PBXGroup;
+			children = (
+				9C0112FB17A9906C0001A6E2 /* Base64.h */,
+				9C0112FC17A9906C0001A6E2 /* Base64.m */,
+			);
+			name = Base64;
+			path = ../../Base64/Base64;
+			sourceTree = "<group>";
+		};
 		9C39AF9417A339EA0080E6BA = {
 			isa = PBXGroup;
 			children = (
@@ -125,6 +138,7 @@
 		9C39AFC617A33A0B0080E6BA /* GoogleTTSAPI */ = {
 			isa = PBXGroup;
 			children = (
+				9C0112FA17A9906C0001A6E2 /* Base64 */,
 				9C39AFC317A33A020080E6BA /* GoogleTTSAPI.h */,
 				9C39AFC417A33A020080E6BA /* GoogleTTSAPI.m */,
 			);
@@ -235,6 +249,7 @@
 				9C39AFC517A33A020080E6BA /* GoogleTTSAPI.m in Sources */,
 				9C39AFCE17A427120080E6BA /* LanguagesViewController.m in Sources */,
 				9C39B00617A4C3D30080E6BA /* MBProgressHUD.m in Sources */,
+				9C0112FD17A9906C0001A6E2 /* Base64.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

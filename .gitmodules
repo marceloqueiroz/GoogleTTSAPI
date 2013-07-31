@@ -1,3 +1,6 @@
 [submodule "MBProgressHUD"]
 	path = MBProgressHUD
 	url = https://github.com/jdg/MBProgressHUD
+[submodule "Base64"]
+	path = Base64
+	url = git@github.com:nicklockwood/Base64.git
