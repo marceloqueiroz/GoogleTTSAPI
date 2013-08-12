@@ -10,6 +10,9 @@
 
 #import "Base64.h"
 
+// File names
+#define kCacheFileName @"cache_v2.plist"
+
 // Error messages
 #define kGoogleTTSAPI_InvalidTextMessage @"Invalid text, please provided a valid text."
 #define kGoogleTTSAPI_InvalidLocaleMessage @"Invalid locale, please provided a valid locale."
@@ -54,6 +57,9 @@
 + (void)textToSpeechWithText:(NSString *)text andLanguage:(NSString*) language cached:(BOOL) cached success:(void(^)(NSData *data))success failure:(void(^)(NSError *error))failure {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         @try {
+            // Clear expired cache
+            [GoogleTTSAPI clearExpiredCache];
+            
             NSString *trimmedText = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
             
             // Validates the text
@@ -148,19 +154,22 @@
 #pragma mark - Cache control
 
 + (NSURL*) fileURLWithFileName: (NSString*) fileName {
-    NSURL *documentDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *documentDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
     return [documentDirectory URLByAppendingPathComponent:[NSString stringWithFormat:@"GoogleTTSAPI/%@",fileName]];
 }
 
 + (NSMutableDictionary*) cacheDictionary {
     NSURL *cacheDirectory = [GoogleTTSAPI fileURLWithFileName:@""];
-    NSURL *cacheDictionaryFileURL = [GoogleTTSAPI fileURLWithFileName:@"cache.plist"];
+    NSURL *cacheDictionaryFileURL = [GoogleTTSAPI fileURLWithFileName:kCacheFileName];
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:[cacheDirectory path]]) {
         [fileManager createDirectoryAtURL:cacheDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    if (![fileManager fileExistsAtPath:[cacheDictionaryFileURL path]]) {
         NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-        [dictionary writeToURL:cacheDictionaryFileURL atomically:YES];
+        [dictionary writeToURL:cacheDictionaryFileURL atomically:YES]; 
     }
     
     return [NSMutableDictionary dictionaryWithContentsOfURL:cacheDictionaryFileURL];
@@ -170,9 +179,10 @@
     NSString *key = [NSString stringWithFormat:@"%@_%@",[text base64EncodedString],language];
     NSDictionary *dictionary = [GoogleTTSAPI cacheDictionary];
     
-    NSString *fileName = [dictionary valueForKey:key];
-    if (fileName) {
-        return [NSData dataWithContentsOfURL:[GoogleTTSAPI fileURLWithFileName:fileName]];
+    NSDictionary *fileDetails = [dictionary valueForKey:key];
+
+    if (fileDetails) {
+        return [NSData dataWithContentsOfURL:[GoogleTTSAPI fileURLWithFileName:[fileDetails valueForKey:@"fileName"]]];
     } else {
         return nil;
     }
@@ -181,16 +191,46 @@
 + (void) cacheData: (NSData*) data forText: (NSString*) text andLanguage: (NSString*) language {
     // Save file
     NSString *fileName = [NSString stringWithFormat:@"%d_%@",(int)[NSDate timeIntervalSinceReferenceDate],language];
+    NSTimeInterval expirationDate = [[NSDate dateWithTimeIntervalSinceNow: 24 * 60 * 60] timeIntervalSinceReferenceDate];
     NSURL *fileURL = [GoogleTTSAPI fileURLWithFileName:fileName];
     [data writeToURL:fileURL atomically:YES];
     
     // Update cache
     NSString *key = [NSString stringWithFormat:@"%@_%@",[text base64EncodedString],language];
     NSMutableDictionary *dictionary = [GoogleTTSAPI cacheDictionary];
-    [dictionary setValue:fileName forKey:key];
-    NSURL *cacheDictionaryFileURL = [GoogleTTSAPI fileURLWithFileName:@"cache.plist"];
+    [dictionary setValue:@{@"fileName": fileName, @"expirationDate": [NSNumber numberWithDouble:expirationDate]} forKey:key];
+    NSURL *cacheDictionaryFileURL = [GoogleTTSAPI fileURLWithFileName:kCacheFileName];
     [dictionary writeToURL:cacheDictionaryFileURL atomically:YES];
 }
 
++ (void) clearExpiredCache {
+    NSMutableDictionary *dictionary = [GoogleTTSAPI cacheDictionary];
+    NSMutableArray *filesToRemove = [NSMutableArray array];
+    
+    // Look for expired files
+    for (NSString *key in dictionary) {
+        NSDictionary *fileDetails = [dictionary valueForKey:key];
+        NSNumber *expiration = [fileDetails valueForKey:@"expirationDate"];
+        
+        NSDate *expirationDate = [NSDate dateWithTimeIntervalSinceReferenceDate:[expiration doubleValue]];
+        if ([expirationDate compare:[NSDate date]] == NSOrderedAscending) {
+            [filesToRemove addObject:key];
+        }
+    }
+    
+    // Remove files
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    for (NSString *fileToRemove in filesToRemove) {
+        NSDictionary *fileDetails = [dictionary valueForKey:fileToRemove];
+        NSString *fileName = [fileDetails valueForKey:@"fileName"];
+        
+        [fileManager removeItemAtURL:[GoogleTTSAPI fileURLWithFileName:fileName] error:nil];
+        [dictionary removeObjectForKey:fileToRemove];
+    }
+    
+    // Persist
+    NSURL *cacheDictionaryFileURL = [GoogleTTSAPI fileURLWithFileName:kCacheFileName];
+    [dictionary writeToURL:cacheDictionaryFileURL atomically:YES];
+}
 
 @end
